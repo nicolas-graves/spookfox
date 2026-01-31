@@ -44,7 +44,6 @@
       "192": "icons/emacs-mono@2x.png"
     },
     "default_title": "Spookfox",
-    "default_popup": "popup/global.html"
   },
   "permissions": [
     "<all_urls>",

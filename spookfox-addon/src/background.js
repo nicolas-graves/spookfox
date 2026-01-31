@@ -321,49 +321,6 @@ const startAutoconnectTimer = (sf) => {
   });
 };
 
-const addJsInjection = (sf) => {
-  const EmacsRequests = {
-    EVAL_IN_ACTIVE_TAB: 'JS_INJECT_EVAL_IN_ACTIVE_TAB',
-    EVAL_IN_BACKGROUND_SCRIPT: 'JS_INJECT_EVAL_IN_BACKGROUND_SCRIPT',
-    EVAL_IN_TAB: 'JS_INJECT_EVAL_IN_TAB',
-  };
-
-  const evalJsInActiveTab = async (script) => {
-    const currentWindow = await browser.windows.getCurrent();
-    const activeTabs = await browser.tabs.query({
-      active: true,
-      windowId: currentWindow.id,
-    });
-
-    if (!activeTabs.length) {
-      throw new Error(
-        'No active tab to execute script in. [script=${JSON.stringify(script)}]'
-      );
-    }
-
-    return Promise.all(
-      activeTabs.map((tab) => browser.tabs.executeScript(tab.id, script))
-    );
-  };
-
-  evalJsInBackgroundScript = async ({ code }) => {
-    const result = window.eval(code);
-
-    return result;
-  };
-
-  evalJsInTab = async ({ code, 'tab-id': tabId }) => {
-    return browser.tabs.executeScript(tabId, { code });
-  };
-
-  sf.registerReqHandler(EmacsRequests.EVAL_IN_ACTIVE_TAB, evalJsInActiveTab);
-  sf.registerReqHandler(
-    EmacsRequests.EVAL_IN_BACKGROUND_SCRIPT,
-    evalJsInBackgroundScript
-  );
-  sf.registerReqHandler(EmacsRequests.EVAL_IN_TAB, evalJsInTab);
-};
-
 const addTabManipulation = (sf) => {
   const EmacsRequests = {
     GET_ACTIVE_TAB: 'GET_ACTIVE_TAB',
@@ -444,7 +401,6 @@ const addTabManipulation = (sf) => {
 const run = async () => {
   const sf = (window.spookfox = new Spookfox());
 
-  addJsInjection(sf);
   addTabManipulation(sf);
 
   startAutoconnectTimer(sf);
